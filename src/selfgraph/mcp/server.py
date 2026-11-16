@@ -51,7 +51,8 @@ _WRITE_CLAUSE = re.compile(
     re.IGNORECASE,
 )
 _UNICODE_ESCAPE = re.compile(r"(?<!\\)(?:\\\\)*\\[uU]")
-_MAP_KEY = re.compile(r"([{,]\s*)[A-Za-z_]\w*(\s*:)")
+_MAP_KEY = re.compile(r"([{,]\s*)[A-Za-z_]\w*\s*:")
+_FLOAT_DOT = re.compile(r"(?<!\w)[0-9]+\.(?![0-9])")
 _PROP_OR_LABEL = re.compile(r"[.:]\s*\w+")
 _READ_OPENERS = re.compile(r"(MATCH|OPTIONAL|WITH|UNWIND|RETURN|SHOW|EXPLAIN|PROFILE)\b", re.IGNORECASE)
 _LEADING_BLANK = re.compile(r"^[\s\x00]+")
@@ -77,7 +78,7 @@ def _is_blocked_query(query: str) -> bool:
     if _UNICODE_ESCAPE.search(query):
         return True
     stripped = _PARAM_REF.sub(_BLANK, blank_lexical_tokens(query))
-    stripped = _PROP_OR_LABEL.sub(" ", _MAP_KEY.sub(r"\1\2", stripped))
+    stripped = _PROP_OR_LABEL.sub(" ", _FLOAT_DOT.sub("0", _MAP_KEY.sub(r"\1 ", stripped)))
     if "\\" in stripped or _WRITE_CLAUSE.search(stripped):
         return True
     heads = (_LEADING_BLANK.sub("", statement) for statement in stripped.split(";"))

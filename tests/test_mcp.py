@@ -143,6 +143,11 @@ BYPASSES = [
     "MATCH (n) RETURN n AS create",
     "SHOW TRANSACTIONS YIELD transactionId AS t TERMINATE TRANSACTIONS t YIELD transactionId AS z RETURN z",
     "RETURN 1; ANALYZE GRAPH",
+    "MATCH (n) WHERE 0 < 1. DELETE n",
+    "MATCH (n) WHERE 0 < 1. SET n.name = 'x' RETURN n",
+    "WITH 1 AS x WHERE 0 < 1. CREATE (m:X) RETURN x",
+    "WITH 1 AS x WHERE 0 < 1. CALL dbms.showCurrentUser() YIELD username RETURN username",
+    "RETURN {a: CALL { CREATE (m:X) RETURN 1 }} AS x",
 ]
 
 READS = [
@@ -150,6 +155,7 @@ READS = [
     "MATCH (n) WHERE n.path = 'C:\\\\users' RETURN n",
     "RETURN '\\\\u0027' AS x",
     "MATCH (n) RETURN n.set AS x;",
+    "MATCH (n1) RETURN n1.set AS x, {create: 1, set: 2} AS m",
     "RETURN 1; MATCH (n) RETURN n",
 ]
 

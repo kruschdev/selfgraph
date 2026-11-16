@@ -16,9 +16,17 @@ const BYPASSES = [
   "WITH 1 AS x insert (m:X) RETURN 1",
   "WITH 1 AS x \\u0043\\u0052EATE (m:X) RETURN 1",
   "MATCH (n) \\u0044ETACH \\u0044ELETE n",
+  "MATCH (n) WHERE 0 < 1. DELETE n",
+  "MATCH (n) WHERE 0 < 1. SET n.name = 'x' RETURN n",
+  "WITH 1 AS x WHERE 0 < 1. CALL dbms.showCurrentUser() YIELD username RETURN username",
+  "RETURN {a: CALL { CREATE (m:X) RETURN 1 }} AS x",
 ];
 
-const READS = ["MATCH (n) RETURN n.set AS x;", "RETURN 1; MATCH (n) RETURN n"];
+const READS = [
+  "MATCH (n) RETURN n.set AS x;",
+  "MATCH (n1) RETURN n1.set AS x, {create: 1, set: 2} AS m",
+  "RETURN 1; MATCH (n) RETURN n",
+];
 
 const TOOL_NAMES = `certify_relation check_answerable check_readiness create_decision create_entity create_preference
   create_relation delete_decision delete_entity delete_preference delete_relation entity_evidence entity_merges

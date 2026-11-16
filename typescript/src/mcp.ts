@@ -47,7 +47,8 @@ const WRITE_CLAUSE = new RegExp(
   "iu",
 );
 const UNICODE_ESCAPE = /(?<!\\)(?:\\\\)*\\[uU]/u;
-const MAP_KEY = new RegExp(`([{,][${PY_WS_CLASS}]*)[A-Za-z_][${PY_WORD_CLASS}]*([${PY_WS_CLASS}]*:)`, "gu");
+const MAP_KEY = new RegExp(`([{,][${PY_WS_CLASS}]*)[A-Za-z_][${PY_WORD_CLASS}]*[${PY_WS_CLASS}]*:`, "gu");
+const FLOAT_DOT = new RegExp(`${WB_START}[0-9]+\\.(?![0-9])`, "gu");
 const PROP_OR_LABEL = new RegExp(`[.:][${PY_WS_CLASS}]*[${PY_WORD_CLASS}]+`, "gu");
 const PARAM = new RegExp(`\\$[${PY_WORD_CLASS}]+`, "gu");
 const READ_OPENERS = new RegExp(`^(MATCH|OPTIONAL|WITH|UNWIND|RETURN|SHOW|EXPLAIN|PROFILE)${WB_END}`, "iu");
@@ -61,7 +62,11 @@ const LEADING_BLANK = new RegExp(`^[${PY_WS_CLASS}\\x00]+`, "u");
  */
 export function isBlockedQuery(query: string): boolean {
   if (UNICODE_ESCAPE.test(query)) return true;
-  const stripped = blankLexicalTokens(query).replace(PARAM, BLANK).replace(MAP_KEY, "$1$2").replace(PROP_OR_LABEL, " ");
+  const stripped = blankLexicalTokens(query)
+    .replace(PARAM, BLANK)
+    .replace(MAP_KEY, "$1 ")
+    .replace(FLOAT_DOT, "0")
+    .replace(PROP_OR_LABEL, " ");
   if (stripped.includes("\\") || WRITE_CLAUSE.test(stripped)) return true;
   return stripped.split(";").some((statement) => {
     const head = statement.replace(LEADING_BLANK, "");
